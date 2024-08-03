@@ -134,7 +134,12 @@ class Usuario {
             materiasRestantes.removeWhere((item)=>item.id == materia.id);
           }
         }
-        materiasAprobadas.addAll(mySet.map((element)=>element.id).toList());
+        materiasAprobadas.addAll(mySet
+            .where((element) => element.periodo != 100)
+            .map((element) => element.id)
+            .toList(),
+        );
+
         plan.addAll(mySet);
         mySet.clear();
 
@@ -149,6 +154,12 @@ class Usuario {
         materiasAprobadas.addAll(mySet.map((element)=>element.id).toList());
         plan.addAll(mySet);
         mySet.clear();
+
+        for (Materia materia  in plan ){
+          if (materia.periodo == 100){
+            materiasAprobadas.add(materia.id);
+          }
+        }
       }
       return plan;
     } catch (e) {

@@ -98,7 +98,7 @@ class PlanEstudio extends StatelessWidget{
                 return ListTile(
                   isThreeLine: true,
                   title: Text(materia.nombre),
-                  subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? 1 : materia.periodo} |  carga horaria: ${materia.horas}'),
+                  subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas}'),
                 );
               },
               childCount: planEstudio.length,
