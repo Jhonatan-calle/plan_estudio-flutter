@@ -116,15 +116,16 @@ class Usuario {
 
       //por ahora solo con las materias obligatorias a manera de prueba
       List<Materia> materiasRestantes = materiasTotal.where((materia) {
-        return !materiasAprobadas.contains(materia.id) && materia.tipo == 'OB';
-      }).toList();
+        return materia.tipo == 'OB';}).toList();
 
       List<Materia> plan = [];
       bool sePuedeCursar;
       List<Materia> mySet = [];
 
+      
+
       while (materiasRestantes.isNotEmpty) {
-        List<Materia> primerCuatrimestre = materiasRestantes.where((materia) => materia.periodo == 1).toList();
+        List<Materia> primerCuatrimestre = materiasRestantes.where((materia) => materia.periodo == 1 || materia.periodo == 100).toList();
 
         for (Materia materia in primerCuatrimestre) {
           sePuedeCursar = materia.rCursar.every((condicion)=> materiasAprobadas.contains(condicion.id));
@@ -142,7 +143,6 @@ class Usuario {
           sePuedeCursar = materia.rCursar.every((condicion)=> materiasAprobadas.contains(condicion.id));
           if (sePuedeCursar) {
             mySet.add(materia);
-            materiasAprobadas.add(materia.id);
             materiasRestantes.removeWhere((item)=>item.id == materia.id);
           }
         }

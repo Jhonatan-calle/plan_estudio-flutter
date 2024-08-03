@@ -23,13 +23,7 @@ class _ScreenController extends State<ScreenController> with SingleTickerProvide
       appBar: AppBar(
         leading: const Icon(Icons.accessibility_new),
         title: const Text('Tus estudios'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.home), text: 'Home'),
-            Tab(icon: Icon(Icons.person), text: 'Perfil'),
-          ],
-        ),
+        
       ),
       body: TabBarView(
         controller: _tabController,
@@ -38,6 +32,13 @@ class _ScreenController extends State<ScreenController> with SingleTickerProvide
           Placeholder(),
         ],
       ),
+      bottomNavigationBar: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(icon: Icon(Icons.home), text: 'Home'),
+            Tab(icon: Icon(Icons.person), text: 'Perfil'),
+          ],
+        ),
     );
   }
 }
