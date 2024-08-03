@@ -1,0 +1,1320 @@
+
+
+import 'dart:convert';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('Firebase Firestore Example')),
+        body: Center(
+          child: ElevatedButton(
+            onPressed: readAndStoreJson,
+            child: Text('Upload JSON to Firestore'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> readAndStoreJson() async {
+    try {
+      // Get the directory of the app
+
+      // Read the JSON file
+   
+
+      await FirebaseFirestore.instance.collection('carreras').doc('LcCsDeLaComputacion_1999').set({'materias':carreraJson});
+      print('Data successfully stored in Firebase');
+    } catch (e) {
+      print('Error reading or storing the JSON file: $e');
+    }
+  }
+}
+
+class Carrera {
+  final String nombre;
+  final List<Map<String, dynamic>> materias;
+
+  Carrera(this.nombre, this.materias);
+
+  Map<String, dynamic> toObject() {
+    return {
+      'nombre': nombre,
+      'materias': materias,
+    };
+  }
+}
+
+List<Map<String, Object>> carreraJson = [
+    {
+        "id": 3349,
+        "nombre": "EVALUACION FINANCIERA DE PROYECTOS DE SOFTWARE I",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 3304,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3124,
+        "nombre": "DISENO DE SOFTWARE ORIENTADO A OBJETOS",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 3301,
+                "estado": "R"
+            },
+            {
+                "id": 3303,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3301,
+                "estado": "A"
+            },
+            {
+                "id": 3301,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1965,
+        "nombre": "SISTEMAS OPERATIVOS",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1949,
+                "estado": "A"
+            },
+            {
+                "id": 1962,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1962,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1960,
+        "nombre": "METODOLOGIA DE LA INVESTIGACION",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 84,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1934,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3307,
+        "nombre": "COMPUTABILIDAD Y COMPLEJIDAD",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1934,
+                "estado": "A"
+            },
+            {
+                "id": 3302,
+                "estado": "A"
+            },
+            {
+                "id": 3305,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3305,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1966,
+        "nombre": "RECUPERACION DE LA INFORMACION",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1959,
+                "estado": "R"
+            },
+            {
+                "id": 3304,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1959,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1944,
+        "nombre": "CALCULO NUMERICO",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1947,
+                "estado": "A"
+            },
+            {
+                "id": 1984,
+                "estado": "A"
+            }
+        ],
+        "rRendir": []
+    },
+    {
+        "id": 3308,
+        "nombre": "VALIDACION Y VERFICACION DE SOFTWARE",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 120,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1948,
+                "estado": "A"
+            },
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1948,
+                "estado": "A"
+            },
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 2225,
+        "nombre": "INGENIERIA WEB",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "A"
+            },
+            {
+                "id": 1959,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ],
+        "rRendir": []
+    },
+    {
+        "id": 3334,
+        "nombre": "HISTORIA DE LA INFORMATICA",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3344,
+        "nombre": "CUAL ES EL NOMBRE DE ESTE CURSO?",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1934,
+                "estado": "A"
+            },
+            {
+                "id": 1947,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1934,
+                "estado": "A"
+            },
+            {
+                "id": 1947,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3341,
+        "nombre": "CONCURRENCIA Y PARALELISMO",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3367,
+        "nombre": "CONCURRENCIA",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3374,
+        "nombre": "ADMINISTRACION DE PROYECTOS DE SOFTWARE",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 1968,
+        "nombre": "TELECOMUNICACIONES Y SISTEMAS DISTRIBUIDOS",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1965,
+                "estado": "R"
+            },
+            {
+                "id": 3303,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1965,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3332,
+        "nombre": "TOPICOS DE REDES DE COMPUTADORAS",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 3303,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3303,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3345,
+        "nombre": "COMPUTACION GRAFICA",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 3305,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            },
+            {
+                "id": 3305,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1967,
+        "nombre": "INTELIGENCIA ARTIFICIAL",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 154,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 3301,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3301,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 2085,
+        "nombre": "PROGRAMACION CONCURRENTE",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 126,
+        "year": 5,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 2226,
+        "nombre": "LOGICA",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1947,
+                "estado": "R"
+            },
+            {
+                "id": 1948,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1947,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3333,
+        "nombre": "SEGURIDAD INFORMATICA",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3373,
+        "nombre": "SEGURIDAD EN SISTEMAS Y REDES",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1949,
+                "estado": "A"
+            },
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1949,
+                "estado": "A"
+            },
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3335,
+        "nombre": "BASES DE DATOS II",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            },
+            {
+                "id": 1959,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            },
+            {
+                "id": 1959,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3336,
+        "nombre": "DISENO E IMPLEMENTACION DE PROGRAMAS PARALELOS",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": ""
+            }
+        ]
+    },
+    {
+        "id": 3338,
+        "nombre": "INTRODUCCION A LA TEORIA DE CATEGORIA",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 3302,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3302,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3339,
+        "nombre": "INGENIERIA DE SOFTWARE DISTRIBUIDA Y TERCIARIZADA",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3340,
+        "nombre": "FUNDAMENTOS DE LA MATEMATICA Y CIENCIAS DE LA COMPUTACION",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1961,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1961,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3342,
+        "nombre": "HISTORIA DEL DESARROLLO DEL SOFTWARE Y EL HARDWARE DE LOS SSTEMAS DE COMPUTACION",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1999,
+        "nombre": "SEMANTICA DE LENGUAGES DE PROGRAMACION",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1961,
+                "estado": "R"
+            },
+            {
+                "id": 3302,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1961,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3372,
+        "nombre": "LA INFORMACION Y SUS DEMONIOS",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1934,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1934,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3343,
+        "nombre": "ANALISIS ESTADISTICO DE PROGRAMAS",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1961,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            },
+            {
+                "id": 1961,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3349,
+        "nombre": "ANALISIS ESTADISTICO DE PROGRAMAS",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 5,
+        "rCursar": [
+            {
+                "id": 1961,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            },
+            {
+                "id": 1961,
+                "estado": "A"
+            },
+            {
+                "id": 3302,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1934,
+        "nombre": "LOGICA MATEMATICA ELEMENTAL",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 1,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 1946,
+        "nombre": "INTRODUCCION AL ALGEBRA",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 1,
+        "rCursar": [
+            {
+                "id": 1934,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1934,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1978,
+        "nombre": "CALCULO I",
+        "periodo": 100,
+        "tipo": "OB",
+        "horas": 224,
+        "year": 1,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 3300,
+        "nombre": "INTRODUCCION A LA ALGORITMICA Y PROGRAMACION",
+        "periodo": 100,
+        "tipo": "OB",
+        "horas": 213,
+        "year": 1,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 1947,
+        "nombre": "ALGEBRA",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 2,
+        "rCursar": [
+            {
+                "id": 1946,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1946,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1984,
+        "nombre": "CALCULO II",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 2,
+        "rCursar": [
+            {
+                "id": 1978,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1978,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1948,
+        "nombre": "PROGRAMACION AVANZADA",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 156,
+        "year": 2,
+        "rCursar": [
+            {
+                "id": 1934,
+                "estado": "A"
+            },
+            {
+                "id": 3300,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3300,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1949,
+        "nombre": "ORGANIZACION DEL PROCESADOR",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 2,
+        "rCursar": [
+            {
+                "id": 3300,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3300,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3301,
+        "nombre": "ALGORITMOS I",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 2,
+        "rCursar": [
+            {
+                "id": 1948,
+                "estado": "R"
+            },
+            {
+                "id": 3300,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1948,
+                "estado": "A"
+            },
+            {
+                "id": 3300,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1937,
+        "nombre": "ESTADISTICA",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 2,
+        "rCursar": [
+            {
+                "id": 1978,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1978,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1976,
+        "nombre": "INGLES",
+        "periodo": 100,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 2,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 3302,
+        "nombre": "ALGORITMOS II",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 3,
+        "rCursar": [
+            {
+                "id": 3301,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3301,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1959,
+        "nombre": "BASES DE DATOS",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 3,
+        "rCursar": [
+            {
+                "id": 1948,
+                "estado": "R"
+            },
+            {
+                "id": 1976,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1948,
+                "estado": "A"
+            },
+            {
+                "id": 1976,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3303,
+        "nombre": "ANALISIS Y DISEÑO DE SISTEMAS",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 180,
+        "year": 3,
+        "rCursar": [
+            {
+                "id": 3301,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3301,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3304,
+        "nombre": "INGENIERIA DE SOFWARE",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 170,
+        "year": 3,
+        "rCursar": [
+            {
+                "id": 3303,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3303,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1956,
+        "nombre": "ANALISIS COMPARATIVO DE LENGUAJES",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 3,
+        "rCursar": [
+            {
+                "id": 1948,
+                "estado": "R"
+            },
+            {
+                "id": 1949,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1948,
+                "estado": "A"
+            },
+            {
+                "id": 1949,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3305,
+        "nombre": "GEOMETRIA Y ALGEBRA LINEAL",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 3,
+        "rCursar": [
+            {
+                "id": 1934,
+                "estado": "A"
+            },
+            {
+                "id": 1946,
+                "estado": "A"
+            },
+            {
+                "id": 1947,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1947,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1962,
+        "nombre": "SIMULACION",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 112,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 1937,
+                "estado": "R"
+            },
+            {
+                "id": 3303,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1937,
+                "estado": "A"
+            },
+            {
+                "id": 3303,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1961,
+        "nombre": "AUTOMATAS Y LENGUAJES",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 140,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 1956,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1956,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 1969,
+        "nombre": "SEMINARIO DE REDACCION INFORMATICA",
+        "periodo": 1,
+        "tipo": "OB",
+        "horas": 56,
+        "year": 4,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 3347,
+        "nombre": "TESTING DE SOFTWARE",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 3304,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3371,
+        "nombre": "GESTION Y TECNOLOGIAS DE PROCESESOS DE NEGOCIOS",
+        "periodo": 1,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 1959,
+                "estado": "R"
+            },
+            {
+                "id": 3304,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1959,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3306,
+        "nombre": "TALLER DE DISEÑO DE SOFTWARE",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 210,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 1959,
+                "estado": "A"
+            },
+            {
+                "id": 3303,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 6235,
+        "nombre": "ESTUDIO DE LA REALIDAD NACIONAL ",
+        "periodo": 2,
+        "tipo": "OB",
+        "horas": 28,
+        "year": 4,
+        "rCursar": [],
+        "rRendir": []
+    },
+    {
+        "id": 3206,
+        "nombre": "CONSTRUCCION FORMAL DE PROGRAMAS EN TEOR DE TIPOS",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 1948,
+                "estado": "A"
+            },
+            {
+                "id": 3301,
+                "estado": "A"
+            },
+            {
+                "id": 3302,
+                "estado": "R"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 1948,
+                "estado": "A"
+            },
+            {
+                "id": 3301,
+                "estado": "A"
+            },
+            {
+                "id": 3302,
+                "estado": "A"
+            }
+        ]
+    },
+    {
+        "id": 3348,
+        "nombre": "INTRODUCCION A LA TRANSFORMACION DE MODELOS DE SOFTWARE USANDO QVT",
+        "periodo": 2,
+        "tipo": "OP",
+        "horas": 112,
+        "year": 4,
+        "rCursar": [
+            {
+                "id": 3303,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ],
+        "rRendir": [
+            {
+                "id": 3303,
+                "estado": "A"
+            },
+            {
+                "id": 3304,
+                "estado": "A"
+            }
+        ]
+    }
+];
