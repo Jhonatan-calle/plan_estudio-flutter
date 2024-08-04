@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 
 class Usuario {
   final String nombre;
   final String dni;
   final List<UserCarrera> carrera;
+  static Usuario? _instance;
 
   Usuario._(this.nombre, this.dni, this.carrera);
 
-  //constructor privado
-  static Usuario? _instance;
+  // se encarga de siempre devolver la misma instancia de usuario
+  static Usuario get instance {
+    if (_instance == null) {
+      throw Exception("instance: El usuario no ha sido creado. Llama primero a 'crear'.");
+    }
+    return _instance!;
+  }
 
   //Crea un usuario en la base de datos y inicializa la instancia
   static Future<bool> crear(String nombre, String dni, String carreraNombre) async {
@@ -19,20 +24,11 @@ class Usuario {
           .doc('opciones')
           .get();
 
-      if (!carrerasDoc.exists) {
-        throw Exception("crear: No se encontraron opciones de carreras.");
-      }
-
       Map<String, dynamic> carrerasData = carrerasDoc.data() as Map<String, dynamic>;
       List<dynamic> carrerasList = carrerasData['carreras'] as List<dynamic>;
 
       // Buscar la carrera por nombre
-      var carreraMap = carrerasList.firstWhere(
-          (option) => option['nombre'] == carreraNombre,
-          orElse: () => null);
-      if (carreraMap == null) {
-        throw Exception("crear: No se encontró una carrera con el nombre proporcionado.");
-      }
+      var carreraMap = carrerasList.firstWhere((option) => option['nombre'] == carreraNombre);
 
       UserCarrera usuarioCarrera = UserCarrera.fromJson(carreraMap as Map<String, dynamic>);
       Usuario usuario = Usuario._(nombre, dni, [usuarioCarrera]);
@@ -52,23 +48,13 @@ class Usuario {
     }
   }
 
-  // se encarga de siempre devolver la misma instancia de usuario
-  static Usuario get instance {
-    if (_instance == null) {
-      throw Exception("instance: El usuario no ha sido creado. Llama primero a 'crear'.");
-    }
-    return _instance!;
-  }
-
-  // Inicializa la instancia cuando el usuario ya existe (privada)
-  static Future<void> _inicializarDesdeBD(String dni) async {
+  //informa si un usuario existe o no y en caso de existir
+  //inicializa la instancia
+  static Future<bool> exists(String dni) async {
     try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('Usuarios')
-          .doc(dni)
-          .get();
-      if (doc.exists) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      DocumentSnapshot docUser = await FirebaseFirestore.instance.collection('Usuarios').doc(dni).get();
+      if (docUser.exists) {
+        Map<String, dynamic> data = docUser.data() as Map<String, dynamic>;
         String nombre = data['nombre'];
         List<dynamic> carrerasJson = data['carreras'] as List<dynamic>;
         List<UserCarrera> carreras = carrerasJson
@@ -76,32 +62,12 @@ class Usuario {
                 UserCarrera.fromJson(carrera as Map<String, dynamic>))
             .toList();
         _instance = Usuario._(nombre, dni, carreras);
-      } else {
-        throw Exception("_inicializarDesdeBD: No se encontró un usuario con el DNI proporcionado.");
-      }
-    } catch (e) {
-      print('_inicializarDesdeBD: Error buscando el usuario en la base de datos: $e');
-    }
-  }
-
-  //informa si un usuario existe o no y en caso de existir
-  //inicializa la instancia
-  static Future<bool> exists(String dni) async {
-    try {
-      DocumentSnapshot docUser = await FirebaseFirestore.instance.collection('Usuarios').doc(dni).get();
-      if (docUser.exists) {
-        await _inicializarDesdeBD(dni);
       }
       return docUser.exists;
     } catch (e) {
-      print('exists: Error verificando la existencia del usuario: $e');
-      return false;
+      throw 'No hay conexión a Internet. Por favor, verifica tu conexión.';
+      
     }
-  }
-
-  //restablece la instancia usuario
-  static void reset() {
-    _instance = null;
   }
 
   //retorna plan de estudios de una carrera
@@ -112,7 +78,7 @@ class Usuario {
       List<Materia> materiasTotal = carreraJson['materias']
           .map<Materia>((materia) => Materia.fromJson(materia))
           .toList();
-      List<int> materiasAprobadas = [];
+      List<int> materiasAprobadas = List.from(userCarrera.materiasA);
 
       //por ahora solo con las materias obligatorias a manera de prueba
       List<Materia> materiasRestantes = materiasTotal.where((materia) {
@@ -121,8 +87,6 @@ class Usuario {
       List<Materia> plan = [];
       bool sePuedeCursar;
       List<Materia> mySet = [];
-
-      
 
       while (materiasRestantes.isNotEmpty) {
         List<Materia> primerCuatrimestre = materiasRestantes.where((materia) => materia.periodo == 1 || materia.periodo == 100).toList();
@@ -164,7 +128,7 @@ class Usuario {
       return plan;
     } catch (e) {
       print('planEstudio: Error calculando el plan de estudio: $e');
-      throw Exception("planEstudio: Ocurrió un error al calcular tu plan de estudio: $e");
+      throw 'No hay conexión a Internet. Por favor, verifica tu conexión.';
     }
   }
 }
@@ -173,16 +137,28 @@ class UserCarrera {
   final String nombre;
   final String facultad;
   final String institucion;
+  final int horasTotales;
+  final int horasA;
   final DocumentReference ref;
   final List<int> materiasA;
 
-  UserCarrera(this.nombre, this.facultad, this.institucion, this.ref, this.materiasA);
+  UserCarrera(
+    this.nombre, 
+    this.facultad, 
+    this.institucion, 
+    this.horasTotales,
+    this.horasA,
+    this.ref, 
+    this.materiasA
+  );
 
   Map<String, dynamic> toJson() {
     return {
       "nombre": nombre,
       "facultad": facultad,
       "institucion": institucion,
+      "horasTotales": horasTotales,
+      "horasA":horasA,
       "ref": ref,
       "materiasA": materiasA
     };
@@ -190,12 +166,42 @@ class UserCarrera {
 
   factory UserCarrera.fromJson(Map<String, dynamic> carrera) {
     try {
-      return UserCarrera(carrera['nombre'], carrera['facultad'],
-          carrera['institucion'], carrera['ref'], List<int>.from(carrera['materiasA'] ?? []));
+      return UserCarrera(
+        carrera['nombre'], 
+        carrera['facultad'],
+        carrera['institucion'],
+        carrera['horasTotales'],
+        carrera['horasA']?? 0,
+        carrera['ref'], 
+        List<int>.from(carrera['materiasA'] ?? [])
+      );
     } catch (e) {
       print('UserCarrera.fromJson: Error convirtiendo JSON a UserCarrera: $e');
       throw Exception('UserCarrera.fromJson: Ocurrió un error al convertir JSON a UserCarrera: $e');
     }
+  }
+
+  static Future<Iterable<String>> opciones(String query) async {
+    try {
+      DocumentSnapshot document = await FirebaseFirestore.instance.collection('carreras').doc('opciones').get();
+      if (document.exists){
+        Map<String, dynamic> data = document.data() as Map<String,dynamic>;
+        List<String> carreras = List<String>.from(data['carreras'].map((carrera) => carrera['nombre'] as String));
+
+        if (query == ''){
+          carreras.sort((a,b)=> a.toLowerCase().compareTo(b.toLowerCase()));
+          return carreras;
+        }else{
+          return carreras.where((String option) => option.toLowerCase().contains(query.toLowerCase()));
+        }
+      }else{
+        return [];
+      }
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+   
   }
 }
 

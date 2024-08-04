@@ -143,10 +143,30 @@ class UserLogic extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Error: ${snapshot.error}',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Vuelve a llamar al FutureBuilder para reintentar
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Volver'),
+                    ),
+                  ],
+                ),
+              ),
+            );
           } else {
             bool exists = snapshot.data ?? false; 
-            
             if (!exists) {
               return SingUpScreen(documento: documento);
             } else {

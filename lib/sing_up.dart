@@ -42,7 +42,7 @@ class MyText extends StatelessWidget{
         const SizedBox(height: 30),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 500),
-          child: const Text("Crea un usuario para guardar tu informacion y asi modificar y cosultar tus datos cuantas veces quieras de manera mas sencilla",textAlign: TextAlign.center,)),
+          child: const Text("Crea un usuario para guardar tu informacion y asi modificar y cosultar tus datos cuantas veces quieras de manera mas sencilla",textAlign: TextAlign.center,))
       ],
     );
   }
@@ -62,31 +62,9 @@ class _SingUpForm extends State<SingUpForm>{
   final TextEditingController _nombreUsuario = TextEditingController();
   final TextEditingController _documento2 = TextEditingController();
   late TextEditingController _documento;
+  String? _selectedOption;
   late Iterable<String> _lastOptions = <String>[];
   String _carrera = '';
-
-  static Future<Iterable<String>> carrera(String query) async {
-    try {
-      DocumentSnapshot document = await FirebaseFirestore.instance.collection('carreras').doc('opciones').get();
-      if (document.exists){
-        Map<String, dynamic> data = document.data() as Map<String,dynamic>;
-        List<String> carreras = List<String>.from(data['carreras'].map((carrera) => carrera['nombre'] as String));
-
-        if (query == ''){
-          carreras.sort((a,b)=> a.toLowerCase().compareTo(b.toLowerCase()));
-          return carreras;
-        }else{
-          return carreras.where((String option) => option.contains(query));
-        }
-      }else{
-        return [];
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-      return [];
-    }
-   
-  }
 
   @override
   void initState() {
@@ -136,18 +114,26 @@ class _SingUpForm extends State<SingUpForm>{
                     if(value == null || value.isEmpty){
                       return 'Ingrese una carrera, despues podra modificarla';
                     }
+                    if (_selectedOption == null || value != _selectedOption) {
+                      return 'Por favor seleccione una carrera válida de las opciones';
+                    }
                     return null; 
                   },
                 );
               },
               optionsBuilder: (TextEditingValue textEditingValue) async {
                 _carrera = textEditingValue.text;
-                final Iterable<String> options = await carrera(_carrera);
+                final Iterable<String> options = await UserCarrera.opciones(_carrera);
                 if( _carrera != textEditingValue.text){
                   return _lastOptions; 
                 }
                 _lastOptions = options;
                 return options;
+              },
+              onSelected: (String selection){ 
+              setState(() {
+                _selectedOption = selection; // Guardar la opción seleccionada
+              });
               },
               optionsViewBuilder: (BuildContext context, AutocompleteOnSelected<String> onSelected, Iterable<String> options) {
                 return Align(
@@ -174,10 +160,10 @@ class _SingUpForm extends State<SingUpForm>{
                         },
                       ),
                     ),
-                  ),
+                  )
                 );
-              },
-              ),
+              }
+            ),
             const SizedBox(height: 10),
             TextFormField(
               controller: _documento,

@@ -9,51 +9,50 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreen();
+  
 }
 
 class _HomeScreen extends State<HomeScreen>{ 
   Icon myicon = const Icon(Icons.person);
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
+    return SingleChildScrollView (
+      child: Column(
+        children: [
+          Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
               usuario.nombre,
               textAlign: TextAlign.center,
+              ),
             ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                const Text(
-                  'Tu plan de estudio personalizado',
-                ),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: 'Puedes modificar tu plan de estudio en las configuraciones de usuario ',
-                    children: [
-                      WidgetSpan(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: myicon,
-                        ),
-                      ),
-                    ],
+          Container(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  const Text(
+                    'Tu plan de estudio personalizado',
                   ),
-                ),
-              ],
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: 'Puedes modificar tu plan de estudio en las configuraciones de usuario ',
+                      children: [
+                        WidgetSpan(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                            child: myicon,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-        PlanEstudioController()
-      ],
+          PlanEstudioController()
+        ],
+      ),
     );
   }
 }
@@ -67,14 +66,33 @@ class PlanEstudioController extends StatelessWidget {
         future: usuario.planEstudio(usuario.carrera[0]),
         builder: (BuildContext context, AsyncSnapshot<List<Materia>?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SliverToBoxAdapter(
-              child: Center(child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: CircularProgressIndicator(),
-              )),
-            );
+            return Center(child: Padding(
+              padding: EdgeInsets.all(10.0),
+              child: CircularProgressIndicator(),
+            ));
           } else if (snapshot.hasError) {
-            return SliverToBoxAdapter(child: Center(child: Text('Error: ${snapshot.error}')));
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Error: ${snapshot.error}',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Vuelve a llamar al FutureBuilder para reintentar
+                         Navigator.pop(context);
+                      },
+                      child: const Text('Volver'),
+                    ),
+                  ],
+                ),
+              ),
+            );
           } else {
             return PlanEstudio(planEstudio: snapshot.data as List<Materia>);
           }
@@ -89,11 +107,14 @@ class PlanEstudio extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return  SliverPadding(
-      padding: EdgeInsets.all(8),
-      sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
+    return Container(
+        alignment: Alignment.center,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 800),
+          child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
                 final materia = planEstudio[index];
                 return ListTile(
                   isThreeLine: true,
@@ -101,9 +122,9 @@ class PlanEstudio extends StatelessWidget{
                   subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas}'),
                 );
               },
-              childCount: planEstudio.length,
+              itemCount:planEstudio.length,
             ),
           ),
-    );
+      );
   }
 }
