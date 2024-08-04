@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plan_estudio/home.dart';
+import 'package:plan_estudio/usuario_screen.dart';
 
 
 class ScreenController extends StatefulWidget {
@@ -29,7 +30,7 @@ class _ScreenController extends State<ScreenController> with SingleTickerProvide
         controller: _tabController,
         children: [
           HomeScreen(),
-          Placeholder(),
+          UsuarioScreen(),
         ],
       ),
       bottomNavigationBar: TabBar(
