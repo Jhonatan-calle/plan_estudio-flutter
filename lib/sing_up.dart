@@ -1,7 +1,6 @@
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:plan_estudio/screenController.dart';
+import 'package:plan_estudio/main.dart';
 import 'package:plan_estudio/usuario.dart';
 
 class SingUpScreen extends StatelessWidget{

@@ -26,34 +26,38 @@ class _HomeScreen extends State<HomeScreen>{
               textAlign: TextAlign.center,
               ),
             ),
-          Container(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  const Text(
-                    'Tu plan de estudio personalizado',
-                  ),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      text: 'Puedes modificar tu plan de estudio en las configuraciones de usuario ',
-                      children: [
-                        WidgetSpan(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                            child: myicon,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          PlanEstudioController()
+          _textoExpliativo(),
+          const PlanEstudioController()
         ],
       ),
     );
+  }
+
+  Container _textoExpliativo() {
+    return Container(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              children: [
+                const Text(
+                  'Tu plan de estudio personalizado',
+                ),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: 'Puedes modificar tu plan de estudio en las configuraciones de usuario ',
+                    children: [
+                      WidgetSpan(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: myicon,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 }
 
@@ -120,6 +124,37 @@ class PlanEstudio extends StatelessWidget{
                   isThreeLine: true,
                   title: Text(materia.nombre),
                   subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas}'),
+                  trailing: PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert), // Icono de tres puntos
+                    onSelected: (String value) {
+                      // Acciones al seleccionar una opción
+                      switch (value) {
+                        case 'opcion1':
+                          print('Opción 1 seleccionada para el elemento $index');
+                          break;
+                        case 'opcion2':
+                          print('Opción 2 seleccionada para el elemento $index');
+                          break;
+                        case 'opcion3':
+                          print('Opción 3 seleccionada para el elemento $index');
+                          break;
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'opcion1',
+                        child: Text('Opción 1'),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'opcion2',
+                        child: Text('Opción 2'),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'opcion3',
+                        child: Text('Opción 3'),
+                      ),
+                    ],
+                  ),
                 );
               },
               itemCount:planEstudio.length,
