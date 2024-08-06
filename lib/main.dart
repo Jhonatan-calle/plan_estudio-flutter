@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:plan_estudio/firebase_options.dart';
 import 'package:plan_estudio/screenController.dart';
 import 'package:plan_estudio/sing_up.dart';
-// import 'package:plan_estudio/test.dart';
+import 'package:plan_estudio/test.dart';
 import 'package:plan_estudio/usuario.dart';
 void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -14,7 +14,7 @@ void main() async {
       title: 'Plan de estudio',
       theme: ThemeData(),
       darkTheme: ThemeData.dark(),
-      home: const Loggin(),
+      home: Loggin(),
     ));
 }
 
