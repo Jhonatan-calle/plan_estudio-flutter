@@ -133,35 +133,30 @@ class Usuario {
   }
 }
 
-class UserCarrera {
-  final String nombre;
-  final String facultad;
-  final String institucion;
-  final int horasTotales;
+class UserCarrera extends Carrera {
   final int horasA;
-  final DocumentReference ref;
   final List<int> materiasA;
 
   UserCarrera(
-    this.nombre, 
-    this.facultad, 
-    this.institucion, 
-    this.horasTotales,
+    String nombre, 
+    String facultad, 
+    String institucion, 
+    int horasTotales,
+    int cargaHPromedio,
+    int cargaHMinima,
     this.horasA,
-    this.ref, 
+    DocumentReference ref, 
     this.materiasA
-  );
+  ) : super(nombre, facultad, institucion, horasTotales, cargaHPromedio, cargaHMinima, ref);
 
+  @override
   Map<String, dynamic> toJson() {
-    return {
-      "nombre": nombre,
-      "facultad": facultad,
-      "institucion": institucion,
-      "horasTotales": horasTotales,
-      "horasA":horasA,
-      "ref": ref,
-      "materiasA": materiasA
-    };
+    final json = super.toJson();
+    json.addAll({
+      "horasA": horasA,
+      "materiasA": materiasA,
+    });
+    return json;
   }
 
   factory UserCarrera.fromJson(Map<String, dynamic> carrera) {
@@ -171,7 +166,9 @@ class UserCarrera {
         carrera['facultad'],
         carrera['institucion'],
         carrera['horasTotales'],
-        carrera['horasA']?? 0,
+        carrera['cargaHPromedio'],
+        carrera['cargaHMinima'],
+        carrera['horasA'] ?? 0,
         carrera['ref'], 
         List<int>.from(carrera['materiasA'] ?? [])
       );
@@ -180,30 +177,79 @@ class UserCarrera {
       throw Exception('UserCarrera.fromJson: Ocurrió un error al convertir JSON a UserCarrera: $e');
     }
   }
+}
+
+class Carrera {
+  final String nombre;
+  final String facultad;
+  final String institucion;
+  final int horasTotales;
+  final int cargaHPromedio;
+  final int cargaHMinima;
+  final DocumentReference ref;
+
+  Carrera(
+    this.nombre, 
+    this.facultad, 
+    this.institucion, 
+    this.horasTotales,
+    this.cargaHPromedio,
+    this.cargaHMinima,
+    this.ref
+  );
+
+  Map<String, dynamic> toJson() {
+    return {
+      "nombre": nombre,
+      "facultad": facultad,
+      "institucion": institucion,
+      "horasTotales": horasTotales,
+      "cargaHPromedio": cargaHPromedio,
+      "cargaHMinima": cargaHMinima,
+      "ref": ref,
+    };
+  }
+
+  factory Carrera.fromJson(Map<String, dynamic> carrera) {
+    try {
+      return Carrera(
+        carrera['nombre'], 
+        carrera['facultad'],
+        carrera['institucion'],
+        carrera['horasTotales'],
+        carrera['cargaHPromedio'],
+        carrera['cargaHMinima'],
+        carrera['ref']
+      );
+    } catch (e) {
+      print('Carrera.fromJson: Error convirtiendo JSON a Carrera: $e');
+      throw Exception('Carrera.fromJson: Ocurrió un error al convertir JSON a Carrera: $e');
+    }
+  }
 
   static Future<Iterable<String>> opciones(String query) async {
     try {
       DocumentSnapshot document = await FirebaseFirestore.instance.collection('carreras').doc('opciones').get();
-      if (document.exists){
-        Map<String, dynamic> data = document.data() as Map<String,dynamic>;
+      if (document.exists) {
+        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
         List<String> carreras = List<String>.from(data['carreras'].map((carrera) => carrera['nombre'] as String));
 
-        if (query == ''){
-          carreras.sort((a,b)=> a.toLowerCase().compareTo(b.toLowerCase()));
+        if (query == '') {
+          carreras.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
           return carreras;
-        }else{
+        } else {
           return carreras.where((String option) => option.toLowerCase().contains(query.toLowerCase()));
         }
-      }else{
+      } else {
         return [];
       }
     } catch (e) {
       print(e.toString());
       return [];
     }
-   
   }
 }
+
 
 class Materia {
   final int horas;

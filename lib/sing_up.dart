@@ -123,7 +123,7 @@ class _SingUpForm extends State<SingUpForm>{
               },
               optionsBuilder: (TextEditingValue textEditingValue) async {
                 _carrera = textEditingValue.text;
-                final Iterable<String> options = await UserCarrera.opciones(_carrera);
+                final Iterable<String> options = await Carrera.opciones(_carrera);
                 if( _carrera != textEditingValue.text){
                   return _lastOptions; 
                 }
