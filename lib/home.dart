@@ -13,7 +13,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen>{ 
-  Icon myicon = const Icon(Icons.person);
+  UserCarrera dropdownValue = usuario.carrera.first;
+
+  void _materiaAprovada(int materia, UserCarrera carrera){
+    setState(() {
+      carrera.materiasA.add(materia);
+      dropdownValue = carrera;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView (
@@ -27,13 +35,35 @@ class _HomeScreen extends State<HomeScreen>{
               ),
             ),
           _textoExpliativo(),
-          const PlanEstudioController()
+          const SizedBox(height: 8),
+          DropdownButton<UserCarrera>(
+            alignment: Alignment.topRight,
+            value: dropdownValue,
+            items: usuario.carrera.map<DropdownMenuItem<UserCarrera>>((UserCarrera carrera){
+              return DropdownMenuItem<UserCarrera>(
+                value: carrera,
+                child:  Text(carrera.nombre)
+                );
+            }).toList(),  
+            onChanged: (UserCarrera? carrera){
+              setState(() {
+                dropdownValue = carrera!;
+
+              });
+            },
+            focusColor: Colors.transparent,
+            ),
+            PlanEstudioController(
+              carrera:  dropdownValue,
+              aprovadaFuction: _materiaAprovada
+            )
         ],
       ),
     );
   }
 
   Container _textoExpliativo() {
+    Icon myicon = const Icon(Icons.person);
     return Container(
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -62,12 +92,18 @@ class _HomeScreen extends State<HomeScreen>{
 }
 
 class PlanEstudioController extends StatelessWidget {
-  const PlanEstudioController( {super.key});
+  const PlanEstudioController( {super.key, required this.carrera, required this.aprovadaFuction});
+  final UserCarrera carrera;
+  final Function aprovadaFuction;
+
+  void _myAprovada(int materia){
+    aprovadaFuction(materia,carrera);
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Materia>?>(
-        future: usuario.planEstudio(usuario.carrera[0]),
+        future: usuario.planEstudio(carrera),
         builder: (BuildContext context, AsyncSnapshot<List<Materia>?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: Padding(
@@ -98,7 +134,10 @@ class PlanEstudioController extends StatelessWidget {
               ),
             );
           } else {
-            return PlanEstudio(planEstudio: snapshot.data as List<Materia>);
+            return PlanEstudio(
+              planEstudio: snapshot.data as List<Materia>,
+              aprovada: _myAprovada
+              );
           }
         },
       );
@@ -106,8 +145,9 @@ class PlanEstudioController extends StatelessWidget {
 }
 
 class PlanEstudio extends StatelessWidget{
-  const PlanEstudio({super.key, required this.planEstudio});
+  const PlanEstudio({super.key, required this.planEstudio, this.aprovada});
   final List<Materia> planEstudio;
+  final aprovada;
 
   @override
   Widget build(BuildContext context) {
@@ -129,8 +169,8 @@ class PlanEstudio extends StatelessWidget{
                     onSelected: (String value) {
                       // Acciones al seleccionar una opción
                       switch (value) {
-                        case 'opcion1':
-                          print('Opción 1 seleccionada para el elemento $index');
+                        case 'aprovada':
+                          aprovada(materia.id);
                           break;
                         case 'opcion2':
                           print('Opción 2 seleccionada para el elemento $index');
@@ -141,18 +181,10 @@ class PlanEstudio extends StatelessWidget{
                       }
                     },
                     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      PopupMenuItem<String>(
-                        value: 'opcion1',
-                        child: Text('Opción 1'),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'opcion2',
-                        child: Text('Opción 2'),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'opcion3',
-                        child: Text('Opción 3'),
-                      ),
+                      const PopupMenuItem<String>(
+                        value: 'aprovada',
+                        child: Text('Marcar como aprovada'),
+                      )
                     ],
                   ),
                 );

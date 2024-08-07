@@ -72,6 +72,7 @@ class Usuario {
 
   //retorna plan de estudios de una carrera
   Future<List<Materia>> planEstudio(UserCarrera userCarrera) async {
+    print(userCarrera.materiasA);
     try {
       DocumentSnapshot doc = await userCarrera.ref.get();
       Map<String, dynamic> carreraJson = doc.data() as Map<String, dynamic>;
@@ -82,7 +83,7 @@ class Usuario {
 
       //por ahora solo con las materias obligatorias a manera de prueba
       List<Materia> materiasRestantes = materiasTotal.where((materia) {
-        return materia.tipo == 'OB';}).toList();
+        return materia.tipo == 'OB' && !materiasAprobadas.contains(materia.id);}).toList();
 
       List<Materia> plan = [];
       bool sePuedeCursar;
