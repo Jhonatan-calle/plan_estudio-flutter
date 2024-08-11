@@ -1,126 +1,88 @@
-import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:plan_estudio/home.dart';
+import 'package:plan_estudio/usuario.dart';
 
-// Definimos los posibles estados de una tarea
-enum TaskState { pending, inProgress, completed }
+Usuario usuario = Usuario.instance;
 
-// Clase para representar una tarea
-class Task {
-  String title;
-  TaskState state;
-
-  Task(this.title, this.state);
-}
-
-void main() {
-  runApp(MaterialApp(home: TaskScreen()));
-}
-
-class TaskScreen extends StatefulWidget {
-  @override
-  _TaskScreenState createState() => _TaskScreenState();
-}
-
-class _TaskScreenState extends State<TaskScreen> {
-  // Controlador del stream para simular la actualización de la lista
-  final StreamController<List<Task>> _taskController = StreamController();
-
-  List<Task> _tasks = [];
+class TestHomescreen extends StatefulWidget {
+  const   TestHomescreen({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    // Cargar la lista inicial
-    _loadTasks();
-  }
+  State<TestHomescreen> createState() => _HomeScreen();
+  
+}
 
-  @override
-  void dispose() {
-    _taskController.close();
-    super.dispose();
-  }
+class _HomeScreen extends State<TestHomescreen>{ 
+  UserCarrera carreraSelect = usuario.carrera.first;
 
-  // Método para cargar las tareas (simula una solicitud de datos)
-  Future<void> _loadTasks() async {
-    // Simula una carga de datos
-    await Future.delayed(Duration(seconds: 5));
+  Future<void> _materiaAprovada(Materia materia, UserCarrera carrera) async{
+    await carrera.addAprovada(materia);
     setState(() {
-      _tasks = [
-        Task("Tarea 1", TaskState.pending),
-        Task("Tarea 2", TaskState.inProgress),
-        Task("Tarea 3", TaskState.completed),
-      ];
-      _taskController.add(_tasks);
+      carreraSelect = carrera;
     });
   }
-
-  // Método para actualizar el estado de una tarea
-  void _updateTaskState(int index, TaskState newState) {
-    setState(() {
-      _tasks[index].state = newState;
-      // Recargar la lista en el stream después de actualizar
-      _taskController.add(_tasks);
-    });
-  }
-
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Lista de Tareas')),
-      body: StreamBuilder<List<Task>>(
-        stream: _taskController.stream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No hay tareas disponibles'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final task = snapshot.data![index];
-                return ListTile(
-                  title: Text(task.title),
-                  subtitle: Text(task.state.toString().split('.').last),
-                  trailing: PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert), // Icono de tres puntos
-                    onSelected: (String value) {
-                      // Acciones al seleccionar una opción
-                      switch (value) {
-                        case 'opcion1':
-                          print('Opción 1 seleccionada para el elemento $index');
-                          break;
-                        case 'opcion2':
-                          print('Opción 2 seleccionada para el elemento $index');
-                          break;
-                        case 'opcion3':
-                          print('Opción 3 seleccionada para el elemento $index');
-                          break;
-                      }
-                    },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      PopupMenuItem<String>(
-                        value: 'opcion1',
-                        child: Text('Opción 1'),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'opcion2',
-                        child: Text('Opción 2'),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'opcion3',
-                        child: Text('Opción 3'),
+    return SingleChildScrollView (
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              usuario.nombre,
+              textAlign: TextAlign.center,
+              ),
+            ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              children: [
+                const Text(
+                  'Tu plan de estudio personalizado',
+                ),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    text: 'Puedes modificar tu plan de estudio en las configuraciones de usuario ',
+                    children: [
+                      WidgetSpan(
+                        child: Padding(
+                          padding:EdgeInsets.symmetric(horizontal: 2.0),
+                          child:Icon(Icons.person),
+                        ),
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          DropdownButton<UserCarrera>(
+            alignment: Alignment.topRight,
+            value: carreraSelect,
+            items: usuario.carrera.map<DropdownMenuItem<UserCarrera>>((UserCarrera carrera){
+              return DropdownMenuItem<UserCarrera>(
+                value: carrera,
+                child:  Text(carrera.nombre)
                 );
-              },
-            );
-          }
-        },
+            }).toList(),  
+            onChanged: (UserCarrera? carrera){
+              setState(() {
+                carreraSelect = carrera!;
+
+              });
+            },
+            focusColor: Colors.transparent,
+            ),
+            
+        ],
       ),
     );
   }
+
+
 }
+

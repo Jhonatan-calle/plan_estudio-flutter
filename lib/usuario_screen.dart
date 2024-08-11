@@ -129,6 +129,7 @@ class DetallesScreen extends StatelessWidget {
   const DetallesScreen({super.key, required this.carrera});
   final UserCarrera carrera;
 
+
   @override
   Widget build(BuildContext context) {
     return Column( 
@@ -155,7 +156,7 @@ class DetallesScreen extends StatelessWidget {
           title: Text('Materias aprobadas'),
           trailing: Icon(Icons.arrow_forward),
           onTap: () {
-            _navigateToScreen(context, FourthScreen());
+            _navigateToScreen(context, Aprovadas(carrera: carrera,));
           },
         ),
       ],
@@ -222,21 +223,62 @@ class ThirdScreen extends StatelessWidget {
   }
 }
 
-class FourthScreen extends StatelessWidget {
+class Aprovadas extends StatefulWidget {
+  const Aprovadas({super.key, required this.carrera});
+  final UserCarrera carrera;
+
+  @override 
+  State<Aprovadas> createState()=> _Aprovadas();
+}
+
+class _Aprovadas extends State<Aprovadas>{ 
+  List<Materia> materiasA = [];
   @override
   Widget build(BuildContext context) {
+    List<Materia> materiasA = widget.carrera.materiasA;
     return Scaffold(
       appBar: AppBar(
         title: Text('Cuarta Pantalla'),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Volver'),
-        ),
-      ),
+      body: ListView.builder(
+        shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final materia = materiasA[index];
+                return ListTile(
+                  isThreeLine: true,
+                  title: Text(materia.nombre),
+                  subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas}'),
+                  trailing: PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert), // Icono de tres puntos
+                    onSelected: (String value) {
+                      // Acciones al seleccionar una opción
+                      switch (value) {
+                        case 'remove':
+                          widget.carrera.delA(materia);
+                          setState(() {
+                            materiasA.remove(materia);
+                          });
+                          break;
+                        case 'opcion2':
+                          print('Opción 2 seleccionada para el elemento $index');
+                          break;
+                        case 'opcion3':
+                          print('Opción 3 seleccionada para el elemento $index');
+                          break;
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'remove',
+                        child: Text('Quitar de aprovadas'),
+                      )
+                    ],
+                  ),
+                );
+              },
+              itemCount:materiasA.length,
+            ),
     );
   }
 }

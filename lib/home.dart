@@ -15,12 +15,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen>{ 
   UserCarrera dropdownValue = usuario.carrera.first;
 
-  void _materiaAprovada(int materia, UserCarrera carrera){
-    setState(() {
-      carrera.materiasA.add(materia);
-      dropdownValue = carrera;
-    });
-  }
   
   @override
   Widget build(BuildContext context) {
@@ -48,14 +42,29 @@ class _HomeScreen extends State<HomeScreen>{
             onChanged: (UserCarrera? carrera){
               setState(() {
                 dropdownValue = carrera!;
-
+      
               });
             },
             focusColor: Colors.transparent,
             ),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 800),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    // Acción para refrescar la página
+                    setState(() {
+                      dropdownValue = dropdownValue;
+                    });
+                  },
+                ),
+              ),
+            ),
+      
             PlanEstudioController(
               carrera:  dropdownValue,
-              aprovadaFuction: _materiaAprovada
             )
         ],
       ),
@@ -92,18 +101,17 @@ class _HomeScreen extends State<HomeScreen>{
 }
 
 class PlanEstudioController extends StatelessWidget {
-  const PlanEstudioController( {super.key, required this.carrera, required this.aprovadaFuction});
+  const PlanEstudioController( {super.key, required this.carrera});
   final UserCarrera carrera;
-  final Function aprovadaFuction;
 
-  void _myAprovada(int materia){
-    aprovadaFuction(materia,carrera);
+  void _myAprovada(Materia materia){
+    carrera.addAprovada(materia);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Materia>?>(
-        future: usuario.planEstudio(carrera),
+        future: carrera.planEstudio(),
         builder: (BuildContext context, AsyncSnapshot<List<Materia>?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: Padding(
@@ -135,7 +143,7 @@ class PlanEstudioController extends StatelessWidget {
             );
           } else {
             return PlanEstudio(
-              planEstudio: snapshot.data as List<Materia>,
+              materias: snapshot.data as List<Materia>,
               aprovada: _myAprovada
               );
           }
@@ -144,13 +152,22 @@ class PlanEstudioController extends StatelessWidget {
   }
 }
 
-class PlanEstudio extends StatelessWidget{
-  const PlanEstudio({super.key, required this.planEstudio, this.aprovada});
-  final List<Materia> planEstudio;
+class PlanEstudio extends StatefulWidget{
+  const PlanEstudio({super.key, required this.materias, this.aprovada,});
+  final List<Materia> materias;
   final aprovada;
+
+  @override 
+  State<PlanEstudio> createState() => _PlanEstudio();
+
+}
+
+class _PlanEstudio extends State<PlanEstudio>{
+
 
   @override
   Widget build(BuildContext context) {
+    List<Materia> planEstudio = widget.materias;
     return Container(
         alignment: Alignment.center,
         child: ConstrainedBox(
@@ -162,15 +179,19 @@ class PlanEstudio extends StatelessWidget{
                 final materia = planEstudio[index];
                 return ListTile(
                   isThreeLine: true,
+                  tileColor: materia.periodo == 1 || materia.periodo == 100 ? Colors.green[100] : Colors.red[100],
                   title: Text(materia.nombre),
-                  subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas}'),
+                  subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas} |  año: ${materia.year}'),
                   trailing: PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert), // Icono de tres puntos
                     onSelected: (String value) {
                       // Acciones al seleccionar una opción
                       switch (value) {
                         case 'aprovada':
-                          aprovada(materia.id);
+                          widget.aprovada(materia);
+                          setState(() {
+                            planEstudio.remove(materia);
+                          });
                           break;
                         case 'opcion2':
                           print('Opción 2 seleccionada para el elemento $index');

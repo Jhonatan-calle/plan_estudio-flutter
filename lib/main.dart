@@ -210,13 +210,16 @@ class _ScreenController extends State<ScreenController> with SingleTickerProvide
           UsuarioScreen(),
         ],
       ),
-      bottomNavigationBar: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.home), text: 'Home'),
-            Tab(icon: Icon(Icons.person), text: 'Perfil'),
-          ],
-        ),
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.home), text: 'Home'),
+              Tab(icon: Icon(Icons.person), text: 'Perfil'),
+            ],
+          ),
+      ),
     );
   }
 }

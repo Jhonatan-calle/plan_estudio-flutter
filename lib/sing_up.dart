@@ -198,19 +198,11 @@ class _SingUpForm extends State<SingUpForm>{
                 }
                 return null;
               },
-              onFieldSubmitted: (value){
-                if (_formkey.currentState!.validate()){
-                  Usuario.crear(_nombreUsuario.text, _documento.text, _carrera);
-                  Navigator.push(context, 
-                  MaterialPageRoute(builder: (context)=> UserLogic(nombre:_nombreUsuario.text, documento:_documento.text, carrera: _carrera)));
-                }
-              },
             ),
             const SizedBox(height: 35),
             ElevatedButton(
               onPressed: (){
                 if (_formkey.currentState!.validate()){
-                  Usuario.crear(_nombreUsuario.text, _documento.text, _carrera);
                   Navigator.push(context, 
                   MaterialPageRoute(builder: (context)=> UserLogic(nombre:_nombreUsuario.text, documento:_documento.text, carrera: _carrera)));
                 }
