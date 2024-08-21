@@ -4,10 +4,10 @@ class Usuario {
   final String nombre;
   final String dni;
   final DocumentReference ref;
-  final List<UserCarrera> carrera;
+  final List<UserCarrera> carreras;
   static Usuario? _instance;
 
-  Usuario._(this.nombre, this.dni, this.ref, this.carrera);
+  Usuario._(this.nombre, this.dni, this.ref, this.carreras);
 
   // se encarga de siempre devolver la misma instancia de usuario
   static Usuario get instance {
@@ -20,22 +20,28 @@ class Usuario {
   //Crea un usuario en la base de datos y inicializa la instancia
   static Future<bool> crear(String nombre, String dni, String carreraNombre) async {
     try {
-      DocumentSnapshot carrerasDoc = await FirebaseFirestore.instance
-          .collection('carreras')
-          .doc('opciones')
-          .get();
-
-      Map<String, dynamic> carrerasData = carrerasDoc.data() as Map<String, dynamic>;
-      List<dynamic> carrerasList = carrerasData['carreras'] as List<dynamic>;
+      QuerySnapshot carrerasDocs = await FirebaseFirestore.instance.collection('Carreras').get();
+      List<DocumentSnapshot> carrerasSnapshots = carrerasDocs.docs;
+      List<Map<String,dynamic>> carrerasList = [];
+      for(var snapshots in carrerasSnapshots){
+        if (snapshots.exists){
+          carrerasList.add(snapshots.data()as Map<String,dynamic>);
+        }
+      }
 
       // Buscar la carrera por nombre
-      var carreraMap = carrerasList.firstWhere((option) => option['nombre'] == carreraNombre);
+      final Map<String,dynamic> carreraMap = carrerasList.firstWhere((option) => option['nombre'] == carreraNombre);
       DocumentReference ref = FirebaseFirestore.instance.collection('Usuarios').doc(dni);
       //crea el usuario y establece campo nombre
       await ref.set({'nombre': nombre});
       DocumentReference idCarrera = await ref.collection('Carreras').add(carreraMap);
       carreraMap['ref'] = idCarrera;
 
+      DocumentReference materiasRef = carreraMap['materiasRef'];
+      DocumentSnapshot doc = await materiasRef.get();
+      Map<String, dynamic> materiasMap = doc.data() as Map<String, dynamic>;
+      carreraMap['materias'] = materiasMap['materias'];
+      
       UserCarrera usuarioCarrera = UserCarrera.fromJson(carreraMap as Map<String, dynamic>); 
       Usuario usuario = Usuario._(nombre, dni, ref, [usuarioCarrera]);
       _instance = usuario;
@@ -64,6 +70,10 @@ class Usuario {
           if(snapshot.exists){
             Map<String,dynamic> carreraMap = snapshot.data() as Map<String, dynamic>;
             carreraMap['ref'] = snapshot.reference;
+            DocumentReference materiasRef = carreraMap['materiasRef'];
+            DocumentSnapshot doc = await materiasRef.get();
+            Map<String, dynamic> materiasMap = doc.data() as Map<String, dynamic>;
+            carreraMap['materias'] = materiasMap['materias'];
             carreras.add(UserCarrera.fromJson(carreraMap));
           }
         }
@@ -80,33 +90,33 @@ class Usuario {
 class UserCarrera extends Carrera {
   final int horasA;
   final List<Materia> materiasA;
+  List<Materia> materiasOp;
   final DocumentReference ref;
 
   UserCarrera(
     super.nombre, 
+    super.materias,
     super.facultad, 
     super.institucion, 
     super.horasTotales,
+    super.horasObligatorias,
     super.cargaHPromedio,
     super.cargaHMinima,
     super.materiasRef, 
     this.horasA,
     this.materiasA,
+    this.materiasOp,
     this.ref
   );
 
   Future<List<Materia>> planEstudio() async {
     try {
-      DocumentSnapshot doc = await materiasRef.get();
-      Map<String, dynamic> carreraJson = doc.data() as Map<String, dynamic>;
-      List<Materia> materiasTotal = carreraJson['materias']
-          .map<Materia>((materia) => Materia.fromJson(materia))
-          .toList();
       List<int> materiasAprobadas = materiasA.map((materia)=> materia.id).toList();
 
+      List<int> idMateriasOp = materiasOp.map((materia)=> materia.id).toList();
       //por ahora solo con las materias obligatorias a manera de prueba
-      List<Materia> materiasRestantes = materiasTotal.where((materia) {
-        return materia.tipo == 'OB' && !materiasAprobadas.contains(materia.id);}).toList();
+      List<Materia> materiasRestantes = materias.where((materia) {
+        return (!materiasAprobadas.contains(materia.id) && (idMateriasOp.contains(materia.id) || materia.tipo == 'OB'));}).toList();
         
       bool sePuedeCursar;
       List<Materia> mySet = [];
@@ -239,30 +249,50 @@ class UserCarrera extends Carrera {
     }
   }
 
+  Future<void> saveOptativas(List<Materia> optativas)async{
+    try {
+      List<Map<String,dynamic>> optativasJson = optativas.map((element)=> element.toJson()).toList();
+      materiasOp = optativas;
+      await ref.update({
+        'materiasOp':optativasJson
+      });
+    } catch (e) {
+      print('ocurrio un problema manejando las materias optativas $e');
+      throw('ocurrio un problema manejando las materias optativas ');
+    }
+  }
+  
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     json.addAll({
       "horasA": horasA,
       "materiasA": materiasA,
+      "materiasOP": materiasOp
     });
     return json;
   }
 
-  factory UserCarrera.fromJson(Map<String, dynamic> carrera) {
-
+  factory UserCarrera.fromJson(Map<String, dynamic> carrera){
     try {
       return UserCarrera(
         carrera['nombre'], 
+        carrera['materias']
+          .map<Materia>((materia) => Materia.fromJson(materia))
+          .toList(),
         carrera['facultad'],
         carrera['institucion'],
         carrera['horasTotales'],
+        carrera['horasObligatorias'],
         carrera['cargaHPromedio'],
         carrera['cargaHMinima'],
         carrera['materiasRef'], 
         carrera['horasA'] ?? 0,
         (carrera['materiasA'] ?? [])
         .map<Materia>((materia) => Materia.fromJson(materia))
+          .toList(),
+        (carrera['materiasOp'] ?? [])
+          .map<Materia>((materiaOp) =>  Materia.fromJson(materiaOp))
           .toList(),
         carrera['ref']
       );
@@ -276,18 +306,22 @@ class UserCarrera extends Carrera {
 
 class Carrera {
   final String nombre;
+  final List<Materia> materias;
   final String facultad;
   final String institucion;
   final int horasTotales;
+  final int horasObligatorias;
   final int cargaHPromedio;
   final int cargaHMinima;
   final DocumentReference materiasRef;
 
   Carrera(
-    this.nombre, 
+    this.nombre,
+    this.materias,
     this.facultad, 
     this.institucion, 
     this.horasTotales,
+    this.horasObligatorias,
     this.cargaHPromedio,
     this.cargaHMinima,
     this.materiasRef
@@ -299,28 +333,13 @@ class Carrera {
       "facultad": facultad,
       "institucion": institucion,
       "horasTotales": horasTotales,
+      "horasObligatorias": horasObligatorias,
       "cargaHPromedio": cargaHPromedio,
       "cargaHMinima": cargaHMinima,
       "materiasRef": materiasRef,
     };
   }
 
-  factory Carrera.fromJson(Map<String, dynamic> carrera) {
-    try {
-      return Carrera(
-        carrera['nombre'], 
-        carrera['facultad'],
-        carrera['institucion'],
-        carrera['horasTotales'],
-        carrera['cargaHPromedio'],
-        carrera['cargaHMinima'],
-        carrera['materiasRef']
-      );
-    } catch (e) {
-      print('Carrera.fromJson: Error convirtiendo JSON a Carrera: $e');
-      throw Exception('Carrera.fromJson: Ocurrió un error al convertir JSON a Carrera: $e');
-    }
-  }
 
   static Future<Iterable<String>> opciones(String query) async {
     try {

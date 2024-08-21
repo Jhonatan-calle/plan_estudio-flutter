@@ -13,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen>{ 
-  UserCarrera dropdownValue = usuario.carrera.first;
+  UserCarrera dropdownValue = usuario.carreras.first;
 
   
   @override
@@ -33,7 +33,7 @@ class _HomeScreen extends State<HomeScreen>{
           DropdownButton<UserCarrera>(
             alignment: Alignment.topRight,
             value: dropdownValue,
-            items: usuario.carrera.map<DropdownMenuItem<UserCarrera>>((UserCarrera carrera){
+            items: usuario.carreras.map<DropdownMenuItem<UserCarrera>>((UserCarrera carrera){
               return DropdownMenuItem<UserCarrera>(
                 value: carrera,
                 child:  Text(carrera.nombre)
@@ -193,11 +193,63 @@ class _PlanEstudio extends State<PlanEstudio>{
                             planEstudio.remove(materia);
                           });
                           break;
-                        case 'opcion2':
-                          print('Opción 2 seleccionada para el elemento $index');
-                          break;
-                        case 'opcion3':
-                          print('Opción 3 seleccionada para el elemento $index');
+                        case 'info':
+                          List<int> rCursarIds = materia.rCursar.map((item)=> item.id).toList();
+                          List<int> rRendirIds = materia.rRendir.map((item)=> item.id).toList();
+                          List<Materia> rCursar = usuario.carreras[0].materias.where((item)=> rCursarIds.contains(item.id)).toList();
+                          List<Materia> rRendir = usuario.carreras[0].materias.where((item)=> rRendirIds.contains(item.id)).toList();
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                contentPadding: EdgeInsets.all(16.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6.0),
+                                ),
+                                content: Container(
+                                  height: 200.0,
+                                  width: double.maxFinite,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Text(materia.nombre),
+                                        Text('Tipo: ${materia.tipo}'),
+                                        SizedBox(height: 10),
+                                        Text('Necesario para cursar:'),
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          itemCount: rCursar.length,
+                                          itemBuilder: (context, index) {
+                                            final item = rCursar[index];
+                                            return ListTile(
+                                              title: Text(item.nombre),
+                                            );
+                                          }
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text('Necesario para Rendir:',
+                                          style: TextStyle(
+                                          ),
+                                        ),
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          itemCount: rRendir.length,
+                                          itemBuilder: (context, index) {
+                                            final item = rRendir[index];
+                                            return ListTile(
+                                              title: Text(item.nombre),
+                                            );
+                                          }
+                                        ),
+                                      ],
+                                    )
+                                  ),
+                                ),
+                              );
+                            },
+                          );
                           break;
                       }
                     },
@@ -205,6 +257,10 @@ class _PlanEstudio extends State<PlanEstudio>{
                       const PopupMenuItem<String>(
                         value: 'aprovada',
                         child: Text('Marcar como aprovada'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'info',
+                        child: Text('info '),
                       )
                     ],
                   ),

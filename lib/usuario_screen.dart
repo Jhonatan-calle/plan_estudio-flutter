@@ -41,9 +41,9 @@ class ListadoCarreas extends StatelessWidget {
       child:ConstrainedBox(
         constraints: BoxConstraints(maxWidth: 500),
         child: ListView.builder(
-          itemCount: usuario.carrera.length,
+          itemCount: usuario.carreras.length,
           itemBuilder: (context, index) {
-            final carrera = usuario.carrera[index];
+            final carrera = usuario.carreras[index];
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
@@ -142,14 +142,14 @@ class DetallesScreen extends StatelessWidget {
           title: Text('Carga Horaria'),
           trailing: Icon(Icons.arrow_forward),
           onTap: () {
-            _navigateToScreen(context, SecondScreen());
+            _navigateToScreen(context, Aprovadas(carrera: carrera,));
           },
         ),
         ListTile(
-          title: Text('Materias optativas'),
+          title: Text('Elejir materias optativas'),
           trailing: Icon(Icons.arrow_forward),
           onTap: () {
-            _navigateToScreen(context, ThirdScreen());
+            _navigateToScreen(context, Optativas(carrera: carrera));
           },
         ),
         ListTile(
@@ -186,20 +186,114 @@ class DetallesScreen extends StatelessWidget {
 }
 
 
-class SecondScreen extends StatelessWidget {
+class Optativas extends StatefulWidget {
+  Optativas({super.key, required this.carrera});
+  final UserCarrera carrera;
+  @override
+  State<Optativas> createState()=> _Optativas();
+}
+
+class _Optativas extends State<Optativas>{
+  List<Materia>materias = []; 
+  List<int> idSeleccionadas = [];
+  List<Materia> seleccionadas = [];
+  int horasMini = 0;
+  int horas = 0;
+  
+  @override
+  void initState() {
+    super.initState();
+    seleccionadas = widget.carrera.materiasOp;
+    idSeleccionadas = seleccionadas.map((materia)=>materia.id).toList();
+    horasMini = widget.carrera.horasTotales - widget.carrera.horasObligatorias;
+    horas = widget.carrera.materiasOp.fold(0, (previousValue, element) => previousValue + element.horas);
+    materias = widget.carrera.materias.where((item)=> item.tipo == 'OP').toList();
+  }
+
+ 
   @override
   Widget build(BuildContext context) {
-    return Column(
-
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Elije Optativas'),
+        actions: [
+          TextButton(
+            onPressed: ()=>{
+              if (horas < horasMini) { // Aquí defines la condición
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Alerta"),
+                      content: Text('La suma de la carga horaria del conjunto selecionado tiene que ser igual o mayor a: $horasMini'),
+                      actions: [
+                        TextButton(
+                          child: const Text("Aceptar"),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Cierra la alerta
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                )
+              }else{
+                widget.carrera.saveOptativas(seleccionadas),
+                Navigator.pop(context)
+              },
+            }, 
+            child: Text('Guardar'))
+        ],
+      ),
+      body:SingleChildScrollView(
+        child: Column(
           children: [
-            IconButton(onPressed: ()=>Navigator.pop(context), icon: Icon(Icons.arrow_back)),
-            const Center(child: Text('segunda pantalla'),)
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text('cantidad de horas minima: ${widget.carrera.horasTotales - widget.carrera.horasObligatorias}'),
+                  Text('Horas selecionadas $horas')
+                ],
+              ),
+            ),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount:materias.length,
+              itemBuilder: (context, index) {
+                final materia = materias[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    border: idSeleccionadas.contains(materia.id) ? Border.all(color: Colors.blue, width: 1) : null,
+                    borderRadius: BorderRadius.circular(8.0)
+                  ),
+                  child: ListTile(
+                    isThreeLine: true,
+                    onTap: ()=> {
+                      if(idSeleccionadas.contains(materia.id)){
+                        idSeleccionadas.remove(materia.id),
+                        seleccionadas.removeWhere((item)=> item.id == materia.id ),
+                        setState(() {
+                          horas -= materia.horas;
+                        })
+                        }else{
+                          idSeleccionadas.add(materia.id),
+                          seleccionadas.add(materia),
+                          setState(() {
+                            horas += materia.horas;
+                          })
+                        }
+                    },
+                    title: Text(materia.nombre),
+                    subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas}'),
+                  ),
+                );
+              },
+            )
           ],
-        )
-      ],
+        ),
+      )
     );
   }
 }
@@ -238,11 +332,10 @@ class _Aprovadas extends State<Aprovadas>{
     List<Materia> materiasA = widget.carrera.materiasA;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cuarta Pantalla'),
+        title: Text('Materias aprovadas'),
       ),
       body: ListView.builder(
         shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 final materia = materiasA[index];
                 return ListTile(
@@ -259,12 +352,6 @@ class _Aprovadas extends State<Aprovadas>{
                           setState(() {
                             materiasA.remove(materia);
                           });
-                          break;
-                        case 'opcion2':
-                          print('Opción 2 seleccionada para el elemento $index');
-                          break;
-                        case 'opcion3':
-                          print('Opción 3 seleccionada para el elemento $index');
                           break;
                       }
                     },

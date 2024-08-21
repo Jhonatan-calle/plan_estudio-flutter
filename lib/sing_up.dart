@@ -198,6 +198,12 @@ class _SingUpForm extends State<SingUpForm>{
                 }
                 return null;
               },
+              onFieldSubmitted: (value){
+                if (_formkey.currentState!.validate()){
+                  Navigator.push(context, 
+                  MaterialPageRoute(builder: (context)=> UserLogic(nombre:_nombreUsuario.text, documento:_documento.text, carrera: _carrera)));
+                }
+              }
             ),
             const SizedBox(height: 35),
             ElevatedButton(
