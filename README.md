@@ -16,6 +16,13 @@ Actualmente, solo está cargada la carrera de **Licenciatura en Ciencias de la C
 
 El proyecto aún está en construcción y se avanza en él en los tiempos disponibles. Todavía no está en un estado final y las funcionalidades pueden cambiar o ampliarse en el futuro.
 
+## Herramientas Utilizadas
+
+Este proyecto se ha implementado utilizando las siguientes herramientas:
+
+- **Flutter**: Un framework de desarrollo de aplicaciones móviles y web creado por Google. Se utiliza para construir la interfaz de usuario de la página y manejar la lógica de negocio.
+- **Firebase**: Una plataforma de Google que proporciona una base de datos en tiempo real y servicios de autenticación. Se utiliza para almacenar la información del usuario y los planes de estudio generados, así como para autenticar a los usuarios mediante su DNI.
+
 ## Instalación y Ejecución
 
 Para probar el proyecto en su estado actual, es necesario:
