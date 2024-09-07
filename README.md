@@ -33,7 +33,7 @@ Para probar el proyecto en su estado actual, es necesario:
 4. Ejecutar la aplicación en un simulador o dispositivo físico.
 
 ```bash
-git clone https://github.com/tu-usuario/planificador-estudios.git
+git clone https://github.com/tu-usuario/plan_estudio-flutter.git
 cd planificador-estudios
 flutter pub get
 flutter run
