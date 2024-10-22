@@ -139,13 +139,6 @@ class DetallesScreen extends StatelessWidget {
           child: Text(carrera.nombre, textAlign: TextAlign.center),
         ),
         ListTile(
-          title: Text('Carga Horaria'),
-          trailing: Icon(Icons.arrow_forward),
-          onTap: () {
-            _navigateToScreen(context, Aprovadas(carrera: carrera,));
-          },
-        ),
-        ListTile(
           title: Text('Elejir materias optativas'),
           trailing: Icon(Icons.arrow_forward),
           onTap: () {

@@ -9,7 +9,7 @@ class Usuario {
 
   Usuario._(this.nombre, this.dni, this.ref, this.carreras);
 
-  // se encarga de siempre devolver la misma instancia de usuario
+  // return the same instance
   static Usuario get instance {
     if (_instance == null) {
       throw Exception("instance: El usuario no ha sido creado. Llama primero a 'crear'.");
@@ -88,8 +88,8 @@ class Usuario {
 }
 
 class UserCarrera extends Carrera {
-  final int horasA;
-  final List<Materia> materiasA;
+  int horasA;
+  List<Materia> materiasA;
   List<Materia> materiasOp;
   final DocumentReference ref;
 
@@ -217,15 +217,15 @@ class UserCarrera extends Carrera {
 
   Future<void> addAprovada(Materia materia) async{
     try {
-      DocumentSnapshot doc = await ref.get();
-      Map<String, dynamic> carreraMap = doc.data() as Map<String, dynamic>;
-      List<Materia> materiasACarrera = (carreraMap['materiasA'] ?? [])
-        .map<Materia>((materia) => Materia.fromJson(materia))
-          .toList();
-      materiasACarrera.add(materia);
-      List<Map<String,dynamic>> materiasMap = materiasACarrera.map((element)=> element.toJson()).toList();
-      await ref.update({'materiasA': materiasMap});
+      
+      horasA += materia.horas;
       materiasA.add(materia);
+      List<Map<String,dynamic>> materiasMap = materiasA.map((element)=> element.toJson()).toList();
+      await ref.update({
+        'horasA':horasA,
+        'materiasA': materiasMap
+        });
+      
     } catch (e) {
       print('ocurrio un problema añadiendo la materia a aprovadas $e');
       throw('ocurrio un problema añadiendo la materia a aprovadas');
@@ -234,15 +234,14 @@ class UserCarrera extends Carrera {
 
   Future<void> delA(Materia materia) async{
     try {
-      DocumentSnapshot doc = await ref.get();
-      Map<String, dynamic> carreraMap = doc.data() as Map<String, dynamic>;
-      List<Materia> materiasACarrera = (carreraMap['materiasA'] ?? [])
-        .map<Materia>((materia) => Materia.fromJson(materia))
-          .toList();
-      materiasACarrera.remove(materia);
-      List<Map<String,dynamic>> materiasMap = materiasACarrera.map((element)=> element.toJson()).toList();
-      await ref.update({'materiasA': materiasMap});
+      horasA -= materia.horas; 
       materiasA.remove(materia);
+      List<Map<String,dynamic>> materiasMap = materiasA.map((element)=> element.toJson()).toList();
+      await ref.update({
+        'horasA':horasA,
+        'materiasA': materiasMap
+        });
+      
     } catch (e) {
       print('ocurrio un problema eliminando la materia de aprovadas $e');
       throw('ocurrio un problema eliminando la materia de aprovadas');
