@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:plan_estudio/firebase_options.dart';
 import 'package:plan_estudio/home.dart';
 import 'package:plan_estudio/sing_up.dart';
-import 'package:plan_estudio/test.dart';
 import 'package:plan_estudio/usuario.dart';
 import 'package:plan_estudio/usuario_screen.dart';
 void main() async {
@@ -14,7 +13,6 @@ void main() async {
       debugShowCheckedModeBanner: false,
       title: 'Plan de estudio',
       theme: ThemeData(),
-      darkTheme: ThemeData.dark(),
       home: Loggin(),
     ));
 }
@@ -126,7 +124,11 @@ class MyText extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConstrainedBox (
       constraints: const BoxConstraints(maxWidth: 500),
-      child:const  Text("En PlanEstudio, calcula tu plan de estudio hecho a medida. Ingresa tus datos y recibe una ruta académica adaptada a tu disponibilidad y progreso actual. Ideal para quienes tienen trabajos o compromisos que dificultan seguir el plan de estudio tradicional, nuestra plataforma te permite avanzar en tu carrera de manera flexible y efectiva."));
+      child:const  Text("En PlanEstudio, calcula tu plan de estudio hecho a medida."
+      " Ingresa tus datos y recibe una ruta académica adaptada a tu disponibilidad y "
+      "progreso actual. Ideal para quienes tienen trabajos o compromisos que dificultan "
+      "seguir el plan de estudio tradicional, nuestra plataforma te permite avanzar en"
+      " tu carrera de manera flexible y efectiva."));
   }
 }
 
@@ -197,28 +199,33 @@ class _ScreenController extends State<ScreenController> with SingleTickerProvide
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: const Icon(Icons.accessibility_new),
-        title: const Text('Tus estudios'),
-        
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          HomeScreen(),
-          UsuarioScreen(),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        child: TabBar(
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 800),
+        child: Scaffold(
+          appBar: AppBar(
+            leading: const Icon(Icons.accessibility_new),
+            title: const Text('Tus estudios'),
+            
+          ),
+          body: TabBarView(
             controller: _tabController,
-            tabs: const [
-              Tab(icon: Icon(Icons.home), text: 'Home'),
-              Tab(icon: Icon(Icons.person), text: 'Perfil'),
+            children: [
+              HomeScreen(),
+              UsuarioScreen(),
             ],
           ),
+          bottomNavigationBar: Container(
+            color: Colors.white,
+            child: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(icon: Icon(Icons.home), text: 'Home'),
+                  Tab(icon: Icon(Icons.person), text: 'Perfil'),
+                ],
+              ),
+          ),
+        ),
       ),
     );
   }

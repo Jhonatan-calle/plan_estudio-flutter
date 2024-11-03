@@ -8,21 +8,10 @@ class UsuarioScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        const TextoExplicativo(),
-        const ListadoCarreas(),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FloatingActionButton.extended(
-              onPressed: () => {},
-              label: const Text('Añadir carrera'), // Usamos `label` en lugar de `child`
-              icon: const Icon(Icons.add), // Puedes quitar esto si no quieres un icono
-            ),
-          ),
-        )
+        TextoExplicativo(),
+        ListadoCarreas(),
       ],
     );
   }
