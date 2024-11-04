@@ -342,10 +342,15 @@ class Carrera {
 
   static Future<Iterable<String>> opciones(String query) async {
     try {
-      DocumentSnapshot document = await FirebaseFirestore.instance.collection('carreras').doc('opciones').get();
-      if (document.exists) {
-        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-        List<String> carreras = List<String>.from(data['carreras'].map((carrera) => carrera['nombre'] as String));
+        QuerySnapshot carrerasDocs = await FirebaseFirestore.instance.collection('Carreras').get();
+        List<DocumentSnapshot> carrerasSnapshots = carrerasDocs.docs;
+        List<Map<String,dynamic>> carrerasList = [];
+        for(var snapshots in carrerasSnapshots){
+          if (snapshots.exists){
+            carrerasList.add(snapshots.data()as Map<String,dynamic>);
+          }
+        }
+        List<String> carreras = carrerasList.map((carrera)=> carrera["nombre"] as String).toList();
 
         if (query == '') {
           carreras.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
@@ -353,14 +358,12 @@ class Carrera {
         } else {
           return carreras.where((String option) => option.toLowerCase().contains(query.toLowerCase()));
         }
-      } else {
-        return [];
-      }
     } catch (e) {
       print(e.toString());
       return [];
     }
   }
+
 
 }
 
