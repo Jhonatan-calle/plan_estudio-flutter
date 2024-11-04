@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Construir el proyecto Flutter para web
-flutter build web
+#flutter build web
 
 # Copiar los archivos generados al repositorio de portafolio
-rsync -av -r /build/web/*  ../potafolio/planEstudio
+rsync -av -r /build/web/*  ../portafolio/planEstudio
 
 
 # Cambia de directorio al repositorio de GitHub Pages del portafolio
-cd ../potafolio/
+cd ../portafolio/
 
 # Agrega, commitea y sube los cambios a GitHub
 git add .
