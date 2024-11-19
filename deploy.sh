@@ -4,7 +4,7 @@
 #flutter build web
 
 # Copiar los archivos generados al repositorio de portafolio
-rsync -av -r /build/web/*  ../portafolio/planEstudio
+rsync -av -r build/web/* ../portafolio/planEstudio/
 
 
 # Cambia de directorio al repositorio de GitHub Pages del portafolio
