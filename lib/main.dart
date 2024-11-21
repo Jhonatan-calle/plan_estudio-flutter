@@ -12,7 +12,9 @@ void main() async {
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Plan de estudio',
-      theme: ThemeData(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.transparent, // Fondo transparente para todo el app
+      ),
       home: Loggin(),
     ));
 }
@@ -22,9 +24,13 @@ class Loggin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Center(
           child: Container(
-              decoration: BoxDecoration(border: Border.all(),borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.lightBlue[100]),
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.all(10),
               child: const Column(
