@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:plan_estudio/main.dart';
-import 'package:plan_estudio/usuario.dart';
+import 'package:plan_estudio/data/carrera.dart';
+import 'package:plan_estudio/data/usuario.dart';
+import 'package:plan_estudio/screen/loggin.dart';
 
 class SingUpScreen extends StatelessWidget{
   const SingUpScreen({super.key, required this.documento});

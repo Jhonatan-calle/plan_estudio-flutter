@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:plan_estudio/usuario.dart';
+import 'package:plan_estudio/data/materia.dart';
+import 'package:plan_estudio/data/user_carrera.dart';
+import 'package:plan_estudio/data/usuario.dart';
 
 Usuario usuario = Usuario.instance;
 
