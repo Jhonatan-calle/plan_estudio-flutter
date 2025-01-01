@@ -1,43 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:plan_estudio/main.dart';
 import 'package:plan_estudio/screen/home.dart';
 import 'package:plan_estudio/screen/sing_up.dart';
 import 'package:plan_estudio/data/usuario.dart';
 import 'package:plan_estudio/screen/usuario_screen.dart';
+import 'package:plan_estudio/utils/info.dart';
 
-class Loggin extends StatelessWidget {
+class Loggin extends StatefulWidget {
   const Loggin({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-          child: Container(
-              decoration: BoxDecoration(border: Border.all(),borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.all(10),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  MyText(),
-                  SizedBox(height: 60),
-                  MyForm()
-              ],),
-            ),
-        ),
-    );
-  }
-}
-
-class MyForm extends StatefulWidget {
-  const MyForm({super.key});
 
   @override
-  State<MyForm> createState() => _MyForm();
+  State<Loggin> createState() => _Loggin();
 }
 
-class  _MyForm extends State<MyForm>{
-  final TextEditingController _documentoController = TextEditingController();
+class _Loggin extends State<Loggin>{ 
+  late TextEditingController _documentoController;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
   @override
@@ -49,76 +25,81 @@ class  _MyForm extends State<MyForm>{
   @override
   void initState() {
     super.initState();
+    _documentoController = TextEditingController();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox (
-      constraints: const BoxConstraints(maxWidth: 300),
-      child:Form(
-        key: _formkey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _documentoController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Número de documento',
-                border: OutlineInputBorder()
-              ),
-              validator: (value){
-                if (value == null || value.isEmpty ){
-                  return 'Ingrese su documento';
-                }else if ( value.length != 8){
-                  return 'El valor debe de tener 8 dijitos';
-                }else if (int.tryParse(value)==null){
-                  return 'El valor debe de ser numerico';
-                }
-                return null;
-              },
-              onFieldSubmitted: (value){
-                if (_formkey.currentState!.validate()){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UserLogic(documento :_documentoController.text)),
-                );
-              }
-              },
+    return Scaffold(
+      body: Center(
+          child: Card(
+            elevation: 20,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ConstrainedBox (
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: Text(descripcion,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
+                    )),
+                  const SizedBox(height: 60),
+                  ConstrainedBox (
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child:Form(
+                      key: _formkey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _documentoController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              hintText: 'Número de documento',
+                              border: OutlineInputBorder()
+                            ),
+                            validator: (value){
+                              if (value == null || value.isEmpty ){
+                                return 'Ingrese su documento';
+                              }else if ( value.length != 8){
+                                return 'El valor debe de tener 8 dijitos';
+                              }else if (int.tryParse(value)==null){
+                                return 'El valor debe de ser numerico';
+                              }
+                              return null;
+                            },
+                            onFieldSubmitted: (value){
+                              if (_formkey.currentState!.validate()){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => UserLogic(documento :_documentoController.text)),
+                              );
+                            }
+                            },
+                          ),
+                          const SizedBox(height: 30),
+                          ElevatedButton(onPressed: (){
+                            if (_formkey.currentState!.validate()){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => UserLogic(documento :_documentoController.text)),
+                              );
+                            }
+                          }, child: const Text('Iniciar'))
+                        ],
+                      ),
+                    )
+                  )
+              ],),
             ),
-            const SizedBox(height: 30),
-            ElevatedButton(onPressed: (){
-              if (_formkey.currentState!.validate()){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UserLogic(documento :_documentoController.text)),
-                );
-              }
-            }, child: const Text('Iniciar'))
-          ],
+          ),
         ),
-      )
     );
   }
 }
-  
-
-class MyText extends StatelessWidget {
-  const MyText({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox (
-      constraints: const BoxConstraints(maxWidth: 500),
-      child:const  Text("En PlanEstudio, calcula tu plan de estudio hecho a medida."
-      " Ingresa tus datos y recibe una ruta académica adaptada a tu disponibilidad y "
-      "progreso actual. Ideal para quienes tienen trabajos o compromisos que dificultan "
-      "seguir el plan de estudio tradicional, nuestra plataforma te permite avanzar en"
-      " tu carrera de manera flexible y efectiva."));
-  }
-}
+ 
 
 
 class UserLogic extends StatelessWidget {
@@ -159,7 +140,7 @@ class UserLogic extends StatelessWidget {
           } else {
             bool exists = snapshot.data ?? false; 
             if (!exists) {
-              return SingUpScreen(documento: documento);
+              return SingUp(documento: documento);
             } else {
               return ScreenController(); 
             }
@@ -194,7 +175,6 @@ class _ScreenController extends State<ScreenController> with SingleTickerProvide
           appBar: AppBar(
             leading: const Icon(Icons.accessibility_new),
             title: const Text('Tus estudios'),
-            
           ),
           body: TabBarView(
             controller: _tabController,

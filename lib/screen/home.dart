@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen>{ 
-  UserCarrera dropdownValue = usuario.carreras.first;
+  UserCarrera carrera = usuario.carreras.first;
 
   
   @override
@@ -32,42 +32,24 @@ class _HomeScreen extends State<HomeScreen>{
             ),
           _textoExpliativo(),
           const SizedBox(height: 8),
-          DropdownButton<UserCarrera>(
-            alignment: Alignment.topRight,
-            value: dropdownValue,
-            items: usuario.carreras.map<DropdownMenuItem<UserCarrera>>((UserCarrera carrera){
-              return DropdownMenuItem<UserCarrera>(
-                value: carrera,
-                child:  Text(carrera.nombre)
-                );
-            }).toList(),  
-            onChanged: (UserCarrera? carrera){
-              setState(() {
-                dropdownValue = carrera!;
-      
-              });
-            },
-            focusColor: Colors.transparent,
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 800),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: Icon(Icons.refresh),
-                  onPressed: () {
-                    // Acción para refrescar la página
-                    setState(() {
-                      dropdownValue = dropdownValue;
-                    });
-                  },
-                ),
+          Text(carrera.nombre),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 800),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  setState(() {// Acción para refrescar la página
+                    carrera = carrera;
+                  });
+                },
               ),
             ),
-      
-            PlanEstudioController(
-              carrera:  dropdownValue,
-            )
+          ),
+          PlanEstudioController(
+            carrera:  carrera,
+          )
         ],
       ),
     );
@@ -177,98 +159,110 @@ class _PlanEstudio extends State<PlanEstudio>{
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final materia = planEstudio[index];
-              return ListTile(
-                isThreeLine: true,
-                tileColor: materia.periodo == 1 ||
-                 materia.periodo == 100 ? Colors.green[100] : Colors.red[100],
-                title: Text(materia.nombre),
-                subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas} |  año: ${materia.year}'),
-                trailing: PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert), // Icono de tres puntos
-                  onSelected: (String value) {
-                    // Acciones al seleccionar una opción
-                    switch (value) {
-                      case 'aprovada':
-                        widget.aprovada(materia);
-                        setState(() {
-                          planEstudio.remove(materia);
-                        });
-                        break;
-                      case 'info':
-                        List<int> rCursarIds = materia.rCursar.map((item)=> item.id).toList();
-                        List<int> rRendirIds = materia.rRendir.map((item)=> item.id).toList();
-                        List<Materia> rCursar = usuario.carreras[0].materias.where((item)=> rCursarIds.contains(item.id)).toList();
-                        List<Materia> rRendir = usuario.carreras[0].materias.where((item)=> rRendirIds.contains(item.id)).toList();
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              contentPadding: EdgeInsets.all(16.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              content: Container(
-                                height: 200.0,
-                                width: double.maxFinite,
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      Text(materia.nombre),
-                                      Text('Tipo: ${materia.tipo}'),
-                                      SizedBox(height: 10),
-                                      Text('Necesario para cursar:'),
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: rCursar.length,
-                                        itemBuilder: (context, index) {
-                                          final item = rCursar[index];
-                                          return ListTile(
-                                            title: Text(item.nombre),
-                                          );
-                                        }
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text('Necesario para Rendir:',
-                                        style: TextStyle(
-                                        ),
-                                      ),
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: rRendir.length,
-                                        itemBuilder: (context, index) {
-                                          final item = rRendir[index];
-                                          return ListTile(
-                                            title: Text(item.nombre),
-                                          );
-                                        }
-                                      ),
-                                    ],
-                                  )
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                        break;
-                    }
-                  },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
-                      value: 'aprovada',
-                      child: Text('Marcar como aprovada'),
+              return Padding(
+                padding: EdgeInsets.all(4),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: materia.periodo == 1 ||
+                     materia.periodo == 100 ? Colors.green[100] : Colors.red[100],
                     ),
-                    const PopupMenuItem<String>(
-                      value: 'info',
-                      child: Text('info '),
-                    )
-                  ],
+                  child: ListTile(
+                    isThreeLine: true,
+                    title: Text(materia.nombre),
+                    subtitle: Text('cuatrimestre: ${materia.periodo == 100 ? "Anual" : materia.periodo} |  carga horaria: ${materia.horas}'),
+                    trailing: materiaMenu(materia, planEstudio, context),
+                  ),
                 ),
               );
             },
             itemCount:planEstudio.length,
           ),
       );
+  }
+
+  PopupMenuButton<String> materiaMenu(Materia materia, List<Materia> planEstudio, BuildContext context) {
+    return PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert), // Icono de tres puntos
+                onSelected: (String value) {
+                  // Acciones al seleccionar una opción
+                  switch (value) {
+                    case 'aprovada':
+                      widget.aprovada(materia);
+                      setState(() {
+                        planEstudio.remove(materia);
+                      });
+                      break;
+                    case 'info':
+                      List<int> rCursarIds = materia.rCursar.map((item)=> item.id).toList();
+                      List<int> rRendirIds = materia.rRendir.map((item)=> item.id).toList();
+                      List<Materia> rCursar = usuario.carreras[0].materias.where((item)=> rCursarIds.contains(item.id)).toList();
+                      List<Materia> rRendir = usuario.carreras[0].materias.where((item)=> rRendirIds.contains(item.id)).toList();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            contentPadding: EdgeInsets.all(16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6.0),
+                            ),
+                            content: Container(
+                              height: 200.0,
+                              width: double.maxFinite,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Text(materia.nombre),
+                                    Text('Tipo: ${materia.tipo}'),
+                                    SizedBox(height: 10),
+                                    Text('Necesario para cursar:'),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: rCursar.length,
+                                      itemBuilder: (context, index) {
+                                        final item = rCursar[index];
+                                        return ListTile(
+                                          title: Text(item.nombre),
+                                        );
+                                      }
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text('Necesario para Rendir:',
+                                      style: TextStyle(
+                                      ),
+                                    ),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: rRendir.length,
+                                      itemBuilder: (context, index) {
+                                        final item = rRendir[index];
+                                        return ListTile(
+                                          title: Text(item.nombre),
+                                        );
+                                      }
+                                    ),
+                                  ],
+                                )
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                      break;
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'aprovada',
+                    child: Text('Marcar como aprovada'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'info',
+                    child: Text('info '),
+                  )
+                ],
+              );
   }
 }

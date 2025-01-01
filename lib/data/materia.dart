@@ -1,5 +1,3 @@
-import 'package:plan_estudio/data/usuario.dart';
-
 class Materia {
   final int horas;
   final int id;

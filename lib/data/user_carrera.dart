@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plan_estudio/data/carrera.dart';
 import 'package:plan_estudio/data/materia.dart';
-import 'package:plan_estudio/data/usuario.dart';
 
 class UserCarrera extends Carrera {
   int horasA;

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plan_estudio/data/materia.dart';
-import 'package:plan_estudio/data/usuario.dart';
 
 class Carrera {
   final String nombre;

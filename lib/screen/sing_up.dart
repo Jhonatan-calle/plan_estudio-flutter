@@ -4,8 +4,8 @@ import 'package:plan_estudio/data/carrera.dart';
 import 'package:plan_estudio/data/usuario.dart';
 import 'package:plan_estudio/screen/loggin.dart';
 
-class SingUpScreen extends StatelessWidget{
-  const SingUpScreen({super.key, required this.documento});
+class SingUp extends StatelessWidget{
+  const SingUp({super.key, required this.documento});
   final String documento;
   @override
   Widget build(BuildContext context) {
