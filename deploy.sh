@@ -1,5 +1,4 @@
-#!/bin/bash
-
+flutter build web --wasm
 # Commit and push changes to the current repository
 git add .
 git commit -m "ayudas del seo"
@@ -7,8 +6,9 @@ git push origin main
 
 # Copy the build to the target directory
 TARGET_DIR="../portafolio/proyectos/planEstudio"
-rm -rf $TARGET_DIR/*
-cp -r build/web/* $TARGET_DIR/
+Remove-Item -Recurse -Force "$TARGET_DIR\*"
+Copy-Item -Recurse -Force "build/web/*" $TARGET_DIR #voy aqui
+
 
 # Commit and push changes to the target repository
 cd ../portafolio
