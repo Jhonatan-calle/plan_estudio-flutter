@@ -42,7 +42,7 @@ class _Loggin extends State<Loggin>{
                 children: <Widget>[
                   ConstrainedBox (
                     constraints: const BoxConstraints(maxWidth: 500),
-                    child: Text(descripcion,
+                    child: Text(description,
                     style: Theme.of(context).textTheme.titleMedium,
                     textAlign: TextAlign.center,
                     )),
